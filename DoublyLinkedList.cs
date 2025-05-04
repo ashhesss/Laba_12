@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MusicInstrumentLibr;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Laba_12
 {
-    public class DoublyLinkedList<T>: IEnumerable<T> where T: ICloneable
+    public class DoublyLinkedList<T>: IEnumerable<T> where T: MusicInstrument, ICloneable
     {
-        private Point<T> head; // Начало списка
-        private Point<T> tail; // Конец списка
-        private int count;     // Количество элементов
+        private Point<T> head; //Начало списка
+        private Point<T> tail; //Конец списка
+        private int count;     //Количество элементов
 
-        public int Count => count; // Свойство для получения количества элементов
-        public bool IsEmpty => count == 0; // Проверка на пустоту
+        public int Count => count; //Свойство для получения количества элементов
+        public bool IsEmpty => count == 0; //Проверка на пустоту
 
-        // Конструктор по умолчанию
+        //Конструктор по умолчанию
         public DoublyLinkedList()
         {
             head = null;
@@ -24,7 +25,7 @@ namespace Laba_12
             count = 0;
         }
 
-        // Добавление элемента в конец списка
+        //Добавление элемента в конец списка
         public void AddLast(T data)
         {
             Point<T> newNode = new Point<T>(data);
@@ -42,7 +43,7 @@ namespace Laba_12
             count++;
         }
 
-        // Добавление элемента в начало списка
+        //Добавление элемента в начало списка
         public void AddFirst(T data)
         {
             Point<T> newNode = new Point<T>(data);
@@ -60,12 +61,21 @@ namespace Laba_12
             count++;
         }
 
-        // Добавление элемента по индексу (0-based)
+        //Добавление элемента по индексу 
         public void AddAt(T data, int index)
         {
+            if (data == null)
+            {
+                Console.WriteLine($"! ошибка: попытка добавить null элемент.");
+                return; // не добавляем null
+            }
+
             if (index < 0 || index > count)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "Индекс выходит за пределы списка.");
+                // вместо выбрасывания исключения выводим сообщение
+                Console.WriteLine($"! ошибка: индекс {index} выходит за пределы [0..{count}]. элемент не добавлен.");
+                return; // выходим из метода
+                // throw new ArgumentOutOfRangeException(nameof(index), "индекс выходит за пределы списка.");
             }
 
             if (index == 0)
@@ -81,20 +91,67 @@ namespace Laba_12
 
             Point<T> newNode = new Point<T>(data);
             Point<T> current = head;
-            // Идем до элемента, *перед* которым нужно вставить
+            // идем до элемента, *перед* которым нужно вставить
             for (int i = 0; i < index - 1; i++)
             {
+                if (current == null)
+                {
+                    Console.WriteLine("! ошибка: непредвиденный null при обходе списка для вставки.");
+                    return; // непредвиденная ошибка
+                }
                 current = current.Next;
+            }
+
+            // проверка, что current не null после цикла
+            if (current == null)
+            {
+                Console.WriteLine("! ошибка: непредвиденный null после обхода списка для вставки.");
+                return;
             }
 
             newNode.Next = current.Next;
             newNode.Prev = current;
-            if (current.Next != null) // Проверка, если current.Next не null
+            // проверка, что current.next не null перед обращением к current.next.prev
+            if (current.Next != null)
             {
                 current.Next.Prev = newNode;
             }
             current.Next = newNode;
             count++;
+            // return true; // убрали возврат bool
+        }
+        public void AddOddPositions(int countToAdd)
+        {
+            int addedCount = 0;
+            for (int i = 0; addedCount < countToAdd; i++)
+            {
+                int insertIndex = i * 2; // Индексы: 0, 2, 4, ... (позиции 1, 3, 5, ...)
+                if (insertIndex > count)
+                {
+                    Console.WriteLine($"Позиция {insertIndex + 1} выходит за пределы списка. Добавление остановлено.");
+                    break;
+                }
+
+                var newInstrument = InstrumentRequests.CreateRandomInstrument();
+                if (newInstrument == null)
+                {
+                    Console.WriteLine("Ошибка: не удалось сгенерировать инструмент.");
+                    continue;
+                }
+
+                // Проверяем, что newInstrument соответствует T
+                if (newInstrument is T typedInstrument)
+                {
+                    Console.WriteLine($"Добавление '{newInstrument.Name}' на позицию {insertIndex + 1} (индекс {insertIndex})");
+                    AddAt(typedInstrument, insertIndex);
+                    addedCount++;
+                }
+                else
+                {
+                    Console.WriteLine($"Ошибка: сгенерированный инструмент не соответствует типу T.");
+                }
+            }
+            Console.WriteLine($"Добавлено {addedCount} элементов.");
         }
 
         public Point<T> FindNode(Predicate<T> match)
@@ -104,47 +161,57 @@ namespace Laba_12
             Point<T> current = head;
             while (current != null)
             {
-                // Проверяем условие для данных текущего узла
-                // Добавим проверку current.Data на null для обобщенного случая
+                //проверяем условие для данных текущего узла
+                //добавим проверку current.Data на null для обобщенного случая
                 if (current.Data != null && match(current.Data))
                 {
-                    return current; // Узел найден
+                    return current; //Узел найден
                 }
                 current = current.Next;
             }
-            return null; // Узел не найден
+            return null; //Узел не найден
         }
 
 
-        public bool RemoveAfter(Point<T> node)
+        public void RemoveFromNameToEnd(string name)
         {
-            if (node == null || node.Next == null) // Если узел не существует или он уже хвост
+            if (IsEmpty)
             {
-                return false;
+                Console.WriteLine("Список пуст");
+                return;
             }
 
-            // Делаем указанный узел новым хвостом
-            tail = node;
-            tail.Next = null; // Обрываем связь со следующими элементами
-
-            // Пересчитываем количество элементов
-            int newCount = 0;
-            Point<T> current = head;
-            while (current != null)
+            Point<T> startNode = FindNode(instr => instr.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (startNode == null)
             {
-                newCount++;
-                if (current == tail) // Дошли до нового хвоста
+                Console.WriteLine($"Элемент с именем '{name}' не найден.");
+                return;
+            }
+
+            Console.WriteLine($"Удаление элементов начиная с '{name}' до конца");
+            if (startNode == head)
+            {
+                head = null;
+                tail = null;
+                count = 0;
+            }
+            else
+            {
+                startNode.Prev.Next = null;
+                tail = startNode.Prev;
+                Point<T> current = startNode;
+                while (current != null)
                 {
-                    break;
+                    Point<T> temp = current;
+                    current = current.Next;
+                    temp.Prev = null;
+                    temp.Next = null;
+                    temp.Data = default(T); // Исправлено: используем default(T)
+                    count--;
                 }
-                current = current.Next;
             }
-            count = newCount;
-            return true;
         }
 
-
-        // Печать списка
         public void PrintList(string title = "Содержимое списка:")
         {
             Console.WriteLine(title);
@@ -157,13 +224,12 @@ namespace Laba_12
             int index = 0;
             while (current != null)
             {
-                Console.WriteLine($"  [{index++}]: {current.Data}"); // Используем Data
+                Console.WriteLine($"  [{index++}]: {current.Data}"); //Используем Data
                 current = current.Next;
             }
             Console.WriteLine($"  Всего элементов: {count}");
         }
 
-        // Глубокое клонирование списка
         public DoublyLinkedList<T> DeepClone()
         {
             DoublyLinkedList<T> cloneList = new DoublyLinkedList<T>();
@@ -178,31 +244,30 @@ namespace Laba_12
             return cloneList;
         }
 
-        // Очистка списка (удаление всех элементов)
+        //Очистка списка (удаление всех элементов)
         public void Clear()
         {
-            // Просто обнуляем ссылки, сборщик мусора сделает остальное
+            //обнуляем ссылки, сборщик мусора сделает остальное
             head = null;
             tail = null;
             count = 0;
-            // Можно добавить явный вызов GC.Collect(), но обычно это не рекомендуется
         }
 
-        // Реализация интерфейса IEnumerable<T> для поддержки foreach
+        //реализация интерфейса IEnumerable<T> для поддержки foreach
         public IEnumerator<T> GetEnumerator()
         {
             Point<T> current = head;
             while (current != null)
             {
-                yield return current.Data; // Возвращаем данные узла
+                yield return current.Data; //возвращаем данные узла
                 current = current.Next;
             }
         }
 
-        // Реализация необобщенного интерфейса IEnumerable
+        //Реализация необобщенного интерфейса IEnumerable
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator(); // Просто вызываем обобщенную версию
+            return GetEnumerator(); //Просто вызываем обобщенную версию
         }
     }
 }

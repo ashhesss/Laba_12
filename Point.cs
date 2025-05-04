@@ -20,13 +20,11 @@ namespace Laba_12
             Prev = null;
         }
 
-        // Переопределение ToString для удобного вывода
         public override string ToString()
         {
             return Data?.ToString() ?? "null"; // Выводим данные узла
         }
 
-        // Метод для клонирования узла (клонирует данные глубоко)
         public Point<T> Clone()
         {
             T clonedData = (T)Data.Clone(); // Глубокое клонирование данных
