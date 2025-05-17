@@ -1,22 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Laba_12.HashNode&lt;T&gt;">
-    <Position X="7.25" Y="1" Width="1.5" />
+    <Position X="2.75" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQEgAAAAAAAAAAAAIAAAAAgAQAAAAA=</HashCode>
       <FileName>HashNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Laba_12.HashTable&lt;T&gt;">
-    <Position X="5.25" Y="1" Width="1.5" />
+    <Position X="1" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACIAAAGAAAAAABBABIAABAQAAAEIAAAIAAAACAAEAAA=</HashCode>
       <FileName>HashTable.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Laba_12.BinaryTree&lt;T&gt;">
+    <Position X="7.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAIAAACAAEAgIAAEIgAEAAAIAFAAIADCAAA=</HashCode>
+      <FileName>BinaryTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Laba_12.BinaryTreeNode&lt;T&gt;">
+    <Position X="9.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAABAACACAAAAAAAA=</HashCode>
+      <FileName>BinaryTreeNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Interface Name="System.Collections.Generic.IEnumerable&lt;T&gt;">
-    <Position X="9.25" Y="1" Width="1.5" />
+    <Position X="4.5" Y="1" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />

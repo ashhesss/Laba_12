@@ -9,256 +9,403 @@ namespace Laba_12
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Лабораторная работа №12 - Задания 1 и 2 (Вариант 9)");
-            DoublyLinkedList<MusicInstrument> instrumentList = null;
-            DoublyLinkedList<MusicInstrument> clonedList = null;
-            HashTable<MusicInstrument> hashTable = new HashTable<MusicInstrument>(5);
-            bool exit = false;
+            DoublyLinkedList<MusicInstrument> list = null;
+            HashTable<MusicInstrument> hashTable = null;
+            BinaryTree<MusicInstrument> idealTree = null;
+            BinaryTree<MusicInstrument> searchTree = null;
 
-            while (!exit)
+            while (true)
             {
-                Console.WriteLine("\nМеню:");
-                Console.WriteLine("Операции с двунаправленным списком");
-                Console.WriteLine("1. Создать новый пустой список");
-                Console.WriteLine("2. Добавить случайные элементы в список");
-                Console.WriteLine("3. Вывести список");
-                Console.WriteLine("4. Добавить элементы на нечётные позиции (1, 3, 5...)");
-                Console.WriteLine("5. Удалить элементы от заданного имени до конца");
-                Console.WriteLine("6. Выполнить глубокое клонирование списка");
-                Console.WriteLine("7. Вывести клонированный список");
-                Console.WriteLine("8. Очистить список");
-                Console.WriteLine("Операции с хеш-таблицей");
-                Console.WriteLine("9. Добавить элемент в хеш-таблицу");
-                Console.WriteLine("10. Вывести хеш-таблицу");
-                Console.WriteLine("11. Найти элемент по ключу");
-                Console.WriteLine("12. Удалить элемент по ключу");
-                Console.WriteLine("13. Добавить элемент в заполненную таблицу");
-                Console.WriteLine("14. Перебор таблицы с помощью foreach");
-                Console.WriteLine("15. Выход");
-                Console.Write("Выберите действие: ");
+                Console.WriteLine("\n=== Меню ===");
+                Console.WriteLine("1. Работа с двунаправленным списком (Задание 1)");
+                Console.WriteLine("2. Работа с хеш-таблицей (Задание 2)");
+                Console.WriteLine("3. Работа с бинарным деревом (Задание 3)");
+                Console.WriteLine("4. Выход");
+                Console.Write("Выберите опцию: ");
 
                 string choice = Console.ReadLine();
 
-                try
+                switch (choice)
                 {
-                    switch (choice)
-                    {
-                        case "1":
-                            instrumentList = new DoublyLinkedList<MusicInstrument>();
-                            clonedList = null;
-                            Console.WriteLine("Создан новый пустой двунаправленный список.");
-                            break;
+                    case "1":
+                        HandleDoublyLinkedList(ref list);
+                        break;
 
-                        case "2":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            Console.Write("Сколько случайных элементов добавить? ");
-                            if (int.TryParse(Console.ReadLine(), out int countToAdd) && countToAdd > 0)
-                            {
-                                for (int i = 0; i < countToAdd; i++)
-                                {
-                                    var randomInstrument = InstrumentRequests.CreateRandomInstrument();
-                                    if (randomInstrument != null)
-                                    {
-                                        instrumentList.AddLast(randomInstrument);
-                                    }
-                                }
-                                Console.WriteLine("Элементы добавлены.");
-                                instrumentList.PrintList();
-                            }
-                            else
-                            {
-                                Console.WriteLine("! Некорректное количество.");
-                            }
-                            break;
+                    case "2":
+                        HandleHashTable(ref hashTable);
+                        break;
 
-                        case "3":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            instrumentList.PrintList();
-                            break;
+                    case "3":
+                        HandleBinaryTree(ref idealTree, ref searchTree);
+                        break;
 
-                        case "4":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            Console.Write("Сколько элементов добавить на нечётные позиции? ");
-                            if (int.TryParse(Console.ReadLine(), out int oddCount) && oddCount > 0)
-                            {
-                                instrumentList.AddOddPositions(oddCount);
-                                instrumentList.PrintList();
-                            }
-                            else
-                            {
-                                Console.WriteLine("! Некорректное количество.");
-                            }
-                            break;
+                    case "4":
+                        // Очистка памяти перед выходом
+                        list?.Clear();
+                        hashTable = null; // Для хеш-таблицы достаточно, так как сборщик мусора освободит память
+                        idealTree?.Clear();
+                        searchTree?.Clear();
+                        return;
 
-                        case "5":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            Console.Write("Введите имя инструмента для удаления: ");
-                            string nameToRemove = Console.ReadLine()?.Trim();
-                            if (string.IsNullOrEmpty(nameToRemove))
-                            {
-                                Console.WriteLine("! Имя не может быть пустым.");
-                                break;
-                            }
-                            instrumentList.RemoveFromNameToEnd(nameToRemove);
-                            instrumentList.PrintList();
-                            break;
-
-                        case "6":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            Console.WriteLine("Глубокое клонирование списка...");
-                            clonedList = instrumentList.DeepClone();
-                            Console.WriteLine("Клонирование выполнено.");
-                            clonedList.PrintList("Содержимое клонированного списка:");
-                            break;
-
-                        case "7":
-                            if (clonedList == null)
-                            {
-                                Console.WriteLine("Клон ещё не создан (используйте пункт 6).");
-                                break;
-                            }
-                            clonedList.PrintList("Содержимое клонированного списка:");
-                            break;
-
-                        case "8":
-                            if (instrumentList == null)
-                            {
-                                Console.WriteLine("! Сначала создайте список (пункт 1).");
-                                break;
-                            }
-                            instrumentList.Clear();
-                            instrumentList.PrintList();
-                            break;
-
-                        case "9":
-                            var instrument = InstrumentRequests.CreateInstrumentFromInput();
-                            if (instrument != null)
-                            {
-                                if (hashTable.Add(instrument.Name, instrument))
-                                {
-                                    Console.WriteLine($"Элемент {instrument} добавлен в хеш-таблицу.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Не удалось добавить элемент (дубликат или таблица заполнена).");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("! Ошибка создания инструмента.");
-                            }
-                            break;
-
-                        case "10":
-                            hashTable.Print();
-                            break;
-
-                        case "11":
-                            Console.Write("Введите ключ (имя инструмента) для поиска: ");
-                            string searchKey = Console.ReadLine()?.Trim();
-                            if (string.IsNullOrEmpty(searchKey))
-                            {
-                                Console.WriteLine("! Ключ не может быть пустым.");
-                                break;
-                            }
-                            var found = hashTable.Find(searchKey);
-                            if (found != null)
-                            {
-                                Console.WriteLine($"Найден элемент: {found}");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Элемент не найден.");
-                            }
-                            break;
-
-                        case "12":
-                            Console.Write("Введите ключ (имя инструмента) для удаления: ");
-                            string removeKey = Console.ReadLine()?.Trim();
-                            if (string.IsNullOrEmpty(removeKey))
-                            {
-                                Console.WriteLine("! Ключ не может быть пустым.");
-                                break;
-                            }
-                            if (hashTable.Remove(removeKey))
-                            {
-                                Console.WriteLine($"Элемент с ключом '{removeKey}' удалён.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Элемент не найден.");
-                            }
-                            break;
-
-                        case "13":
-                            if (hashTable.IsFull())
-                            {
-                                Console.WriteLine("Таблица заполнена, попытка добавить новый элемент:");
-                                var newInstrument = InstrumentRequests.CreateInstrumentFromInput();
-                                if (newInstrument != null)
-                                {
-                                    if (!hashTable.Add(newInstrument.Name, newInstrument))
-                                    {
-                                        Console.WriteLine("Не удалось добавить элемент: таблица заполнена.");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Элемент {newInstrument} добавлен.");
-                                    }
-                                    hashTable.Print();
-                                }
-                                else
-                                {
-                                    Console.WriteLine("! Ошибка создания инструмента.");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Таблица ещё не заполнена. Добавьте больше элементов.");
-                            }
-                            break;
-
-                        case "14":
-                            Console.WriteLine("Перебор хеш-таблицы с помощью foreach:");
-                            foreach (var pair in hashTable)
-                            {
-                                Console.WriteLine($"Key: {pair.Key}, Value: {pair.Value}");
-                            }
-                            break;
-
-                        case "15":
-                            Console.WriteLine("Выход из программы.");
-                            exit = true;
-                            break;
-
-                        default:
-                            Console.WriteLine("Неверный выбор. Пожалуйста, выберите пункт из меню.");
-                            break;
-                    }
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
                 }
-                catch (Exception ex)
+            }
+        }
+
+        static void HandleDoublyLinkedList(ref DoublyLinkedList<MusicInstrument> list)
+        {
+            DoublyLinkedList<MusicInstrument> instrumentList = new DoublyLinkedList<MusicInstrument>();
+            DoublyLinkedList<MusicInstrument> clonedList = null;
+
+            while (true)
+            {
+                Console.WriteLine("\n=== Двунаправленный список ===");
+                Console.WriteLine("1. Создать список");
+                Console.WriteLine("2. Вывести список");
+                Console.WriteLine("3. Добавить элементы с нечётными номерами");
+                Console.WriteLine("4. Удалить элементы после заданного имени");
+                Console.WriteLine("5. Сделать глубокое клонирование списка");
+                Console.WriteLine("6. Удалить список из памяти");
+                Console.WriteLine("7. Назад");
+                Console.Write("Выберите опцию: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
                 {
-                    Console.WriteLine($"! Ошибка: {ex.Message}");
+                    case "1":
+                        instrumentList = new DoublyLinkedList<MusicInstrument>();
+                        clonedList = null;
+                        Console.WriteLine("Создан новый пустой двунаправленный список.");
+                        break;
+
+                    case "2":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        Console.Write("Сколько случайных элементов добавить? ");
+                        if (int.TryParse(Console.ReadLine(), out int countToAdd) && countToAdd > 0)
+                        {
+                            for (int i = 0; i < countToAdd; i++)
+                            {
+                                var randomInstrument = InstrumentRequests.CreateRandomInstrument();
+                                if (randomInstrument != null)
+                                {
+                                    instrumentList.AddLast(randomInstrument);
+                                }
+                            }
+                            Console.WriteLine("Элементы добавлены.");
+                            instrumentList.PrintList();
+                        }
+                        else
+                        {
+                            Console.WriteLine("! Некорректное количество.");
+                        }
+                        break;
+
+                    case "3":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        instrumentList.PrintList();
+                        break;
+
+                    case "4":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        Console.Write("Сколько элементов добавить на нечётные позиции? ");
+                        if (int.TryParse(Console.ReadLine(), out int oddCount) && oddCount > 0)
+                        {
+                            instrumentList.AddOddPositions(oddCount);
+                            instrumentList.PrintList();
+                        }
+                        else
+                        {
+                            Console.WriteLine("! Некорректное количество.");
+                        }
+                        break;
+
+                    case "5":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        Console.Write("Введите имя инструмента для удаления: ");
+                        string nameToRemove = Console.ReadLine()?.Trim();
+                        if (string.IsNullOrEmpty(nameToRemove))
+                        {
+                            Console.WriteLine("! Имя не может быть пустым.");
+                            break;
+                        }
+                        instrumentList.RemoveFromNameToEnd(nameToRemove);
+                        instrumentList.PrintList();
+                        break;
+
+                    case "6":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        Console.WriteLine("Глубокое клонирование списка...");
+                        clonedList = instrumentList.DeepClone();
+                        Console.WriteLine("Клонирование выполнено.");
+                        clonedList.PrintList("Содержимое клонированного списка:");
+                        break;
+
+                    case "7":
+                        if (clonedList == null)
+                        {
+                            Console.WriteLine("Клон ещё не создан (используйте пункт 6).");
+                            break;
+                        }
+                        clonedList.PrintList("Содержимое клонированного списка:");
+                        break;
+
+                    case "8":
+                        if (instrumentList == null)
+                        {
+                            Console.WriteLine("! Сначала создайте список (пункт 1).");
+                            break;
+                        }
+                        instrumentList.Clear();
+                        instrumentList.PrintList();
+                        break;
+
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
+                }
+            }
+        }
+
+        static void HandleHashTable(ref HashTable<MusicInstrument> hashTable)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Хеш-таблица ===");
+                Console.WriteLine("1. Создать хеш-таблицу");
+                Console.WriteLine("2. Вывести хеш-таблицу");
+                Console.WriteLine("3. Найти элемент по ключу");
+                Console.WriteLine("4. Удалить элемент по ключу");
+                Console.WriteLine("5. Повторно найти элемент");
+                Console.WriteLine("6. Добавить элемент в полную таблицу");
+                Console.WriteLine("7. Назад");
+                Console.Write("Выберите опцию: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Введите размер хеш-таблицы: ");
+                        if (int.TryParse(Console.ReadLine(), out int size) && size > 0)
+                        {
+                            hashTable = new HashTable<MusicInstrument>(size);
+                            for (int i = 0; i < size; i++)
+                            {
+                                var instrument = InstrumentRequests.CreateRandomInstrument();
+                                if (!hashTable.Add(instrument.Name, instrument))
+                                {
+                                    Console.WriteLine($"Не удалось добавить элемент с ключом {instrument.Name}: таблица полна или ключ уже существует.");
+                                    break;
+                                }
+                            }
+                            Console.WriteLine("Хеш-таблица создана и заполнена.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Неверный размер.");
+                        }
+                        break;
+
+                    case "2":
+                        if (hashTable == null)
+                            Console.WriteLine("Хеш-таблица не создана.");
+                        else
+                            hashTable.Print();
+                        break;
+
+                    case "3":
+                        if (hashTable == null)
+                        {
+                            Console.WriteLine("Хеш-таблица не создана.");
+                            break;
+                        }
+                        Console.Write("Введите ключ (имя инструмента) для поиска: ");
+                        string keyToFind = Console.ReadLine();
+                        var found = hashTable.Find(keyToFind);
+                        if (found != null)
+                            Console.WriteLine($"Элемент найден: {found}");
+                        else
+                            Console.WriteLine("Элемент не найден.");
+                        break;
+
+                    case "4":
+                        if (hashTable == null)
+                        {
+                            Console.WriteLine("Хеш-таблица не создана.");
+                            break;
+                        }
+                        Console.Write("Введите ключ (имя инструмента) для удаления: ");
+                        string keyToDelete = Console.ReadLine();
+                        if (hashTable.Remove(keyToDelete))
+                            Console.WriteLine("Элемент удалён.");
+                        else
+                            Console.WriteLine("Элемент не найден или уже удалён.");
+                        break;
+
+                    case "5":
+                        if (hashTable == null)
+                        {
+                            Console.WriteLine("Хеш-таблица не создана.");
+                            break;
+                        }
+                        Console.Write("Введите ключ (имя инструмента) для повторного поиска: ");
+                        string keyToFindAgain = Console.ReadLine();
+                        var foundAgain = hashTable.Find(keyToFindAgain);
+                        if (foundAgain != null)
+                            Console.WriteLine($"Элемент найден: {foundAgain}");
+                        else
+                            Console.WriteLine("Элемент не найден.");
+                        break;
+
+                    case "6":
+                        if (hashTable == null)
+                        {
+                            Console.WriteLine("Хеш-таблица не создана.");
+                            break;
+                        }
+                        if (!hashTable.IsFull())
+                        {
+                            Console.WriteLine("Хеш-таблица не полна. Сначала заполните её.");
+                            break;
+                        }
+                        var newInstrument = InstrumentRequests.CreateRandomInstrument();
+                        Console.WriteLine($"Попытка добавить элемент: {newInstrument}");
+                        if (!hashTable.Add(newInstrument.Name, newInstrument))
+                            Console.WriteLine("Не удалось добавить элемент: таблица полна.");
+                        break;
+
+                    case "7":
+                        return;
+
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
+                }
+            }
+        }
+
+        static void HandleBinaryTree(ref BinaryTree<MusicInstrument> idealTree, ref BinaryTree<MusicInstrument> searchTree)
+        {
+            while (true)
+            {
+                Console.WriteLine("\nБинарное дерево");
+                Console.WriteLine("1. Создать идеально сбалансированное дерево");
+                Console.WriteLine("2. Вывести деревья");
+                Console.WriteLine("3. Найти максимальный элемент");
+                Console.WriteLine("4. Преобразовать в дерево поиска");
+                Console.WriteLine("5. Удалить элемент из дерева поиска");
+                Console.WriteLine("6. Удалить деревья из памяти");
+                Console.WriteLine("7. Назад");
+                Console.Write("Выберите опцию: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Введите размер дерева: ");
+                        if (int.TryParse(Console.ReadLine(), out int size) && size > 0)
+                        {
+                            idealTree = new BinaryTree<MusicInstrument>(() => InstrumentRequests.CreateRandomInstrument());
+                            idealTree.CreateIdealTree(size);
+                            Console.WriteLine("Идеально сбалансированное дерево создано.");
+                            searchTree = null; // Сбрасываем дерево поиска
+                        }
+                        else
+                        {
+                            Console.WriteLine("Неверный размер.");
+                        }
+                        break;
+
+                    case "2":
+                        if (idealTree == null)
+                            Console.WriteLine("Идеально сбалансированное дерево не создано.");
+                        else
+                            idealTree.PrintTree("Идеально сбалансированное дерево");
+
+                        if (searchTree == null)
+                            Console.WriteLine("Дерево поиска не создано.");
+                        else
+                            searchTree.PrintTree("Дерево поиска");
+                        break;
+
+                    case "3":
+                        if (idealTree == null)
+                        {
+                            Console.WriteLine("Идеально сбалансированное дерево не создано.");
+                            break;
+                        }
+                        var maxElement = idealTree.FindMaxElement();
+                        if (maxElement != null)
+                            Console.WriteLine($"Максимальный элемент: {maxElement}");
+                        else
+                            Console.WriteLine("Дерево пустое.");
+                        break;
+
+                    case "4":
+                        if (idealTree == null)
+                        {
+                            Console.WriteLine("Идеально сбалансированное дерево не создано.");
+                            break;
+                        }
+                        searchTree = idealTree.ConvertToSearchTree();
+                        Console.WriteLine("Дерево преобразовано в дерево поиска.");
+                        break;
+
+                    case "5":
+                        if (searchTree == null)
+                        {
+                            Console.WriteLine("Дерево поиска не создано. Сначала выполните преобразование.");
+                            break;
+                        }
+                        Console.Write("Введите ключ (имя инструмента) для удаления: ");
+                        string keyToDelete = Console.ReadLine();
+                        searchTree.DeleteFromSearchTree(keyToDelete);
+                        Console.WriteLine("Элемент удалён (если он существовал).");
+                        break;
+
+                    case "6":
+                        if (idealTree == null && searchTree == null)
+                        {
+                            Console.WriteLine("Деревья уже пусты.");
+                            break;
+                        }
+                        idealTree?.Clear();
+                        searchTree?.Clear();
+                        idealTree = null;
+                        searchTree = null;
+                        Console.WriteLine("Деревья удалены из памяти.");
+                        break;
+
+                    case "7":
+                        return;
+
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
                 }
             }
         }
