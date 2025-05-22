@@ -9,10 +9,10 @@ namespace Laba_12
     {
         static void Main(string[] args)
         {
-            DoublyLinkedList<MusicInstrument> list = null;
-            HashTable<MusicInstrument> hashTable = null;
-            BinaryTree<MusicInstrument> idealTree = null;
-            BinaryTree<MusicInstrument> searchTree = null;
+            DoublyLinkedList<MusicInstrument>? list = null;
+            HashTable<MusicInstrument>? hashTable = null;
+            BinaryTree<MusicInstrument>? idealTree = null;
+            BinaryTree<MusicInstrument>? searchTree = null;
 
             while (true)
             {
@@ -20,10 +20,11 @@ namespace Laba_12
                 Console.WriteLine("1. Работа с двунаправленным списком (Задание 1)");
                 Console.WriteLine("2. Работа с хеш-таблицей (Задание 2)");
                 Console.WriteLine("3. Работа с бинарным деревом (Задание 3)");
-                Console.WriteLine("4. Выход");
+                Console.WriteLine("4. Работа с обобщенной коллекцией (Задание 4)");
+                Console.WriteLine("5. Выход");
                 Console.Write("Выберите опцию: ");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
@@ -40,6 +41,9 @@ namespace Laba_12
                         break;
 
                     case "4":
+                        HandleMyCollection();
+                        break;
+                    case "5":
                         // Очистка памяти перед выходом
                         list?.Clear();
                         hashTable = null; // Для хеш-таблицы достаточно, так как сборщик мусора освободит память
@@ -57,7 +61,7 @@ namespace Laba_12
         static void HandleDoublyLinkedList(ref DoublyLinkedList<MusicInstrument> list)
         {
             DoublyLinkedList<MusicInstrument> instrumentList = new DoublyLinkedList<MusicInstrument>();
-            DoublyLinkedList<MusicInstrument> clonedList = null;
+            DoublyLinkedList<MusicInstrument>? clonedList = null;
 
             while (true)
             {
@@ -406,6 +410,148 @@ namespace Laba_12
                     default:
                         Console.WriteLine("Неверный выбор. Попробуйте снова.");
                         break;
+                }
+            }
+        }
+
+        static void HandleMyCollection()
+        {
+            MyCollection<MusicInstrument> collection = null;
+            while (true)
+            {
+                Console.WriteLine("\n=== Задание 4: Обобщённая хеш-таблица ===");
+                Console.WriteLine("1. Создать пустую коллекцию");
+                Console.WriteLine("2. Создать коллекцию с 5 случайными элементами");
+                Console.WriteLine("3. Создать копию коллекции");
+                Console.WriteLine("4. Добавить новый элемент");
+                Console.WriteLine("5. Проверить наличие ключа");
+                Console.WriteLine("6. Получить значение по ключу");
+                Console.WriteLine("7. Удалить элемент по ключу");
+                Console.WriteLine("8. Копировать коллекцию в массив");
+                Console.WriteLine("9. Очистить коллекцию");
+                Console.WriteLine("10. Вывести коллекцию");
+                Console.WriteLine("0. Вернуться в главное меню");
+                Console.Write("Выберите опцию: ");
+
+                string? choice = Console.ReadLine();
+                Console.WriteLine();
+
+                if (choice == "0") break;
+
+                try
+                {
+                    switch (choice)
+                    {
+                        case "1":
+                            collection = new MyCollection<MusicInstrument>();
+                            Console.WriteLine("Пустая коллекция создана.");
+                            collection.Print();
+                            break;
+                        case "2":
+                            collection = new MyCollection<MusicInstrument>(5);
+                            Console.WriteLine("Коллекция с 5 элементами создана.");
+                            collection.Print();
+                            break;
+                        case "3":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            var copy = new MyCollection<MusicInstrument>(collection);
+                            Console.WriteLine("Копия коллекции создана.");
+                            copy.Print("Содержимое копии:");
+                            break;
+                        case "4":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            var newInstrument = InstrumentRequests.CreateRandomInstrument() as MusicInstrument;
+                            collection.Add("NewItem", newInstrument);
+                            Console.WriteLine($"Элемент с ключом 'NewItem' добавлен.");
+                            collection.Print();
+                            break;
+                        case "5":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            Console.Write("Введите ключ для проверки: ");
+                            string? keyToCheck = Console.ReadLine();
+                            Console.WriteLine($"Ключ '{keyToCheck}' существует: {collection.ContainsKey(keyToCheck)}");
+                            break;
+                        case "6":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            Console.Write("Введите ключ для получения значения: ");
+                            string? keyToGet = Console.ReadLine();
+                            if (collection.TryGetValue(keyToGet, out var value))
+                            {
+                                Console.WriteLine($"Значение для ключа '{keyToGet}': {value}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Ключ '{keyToGet}' не найден.");
+                            }
+                            break;
+                        case "7":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            Console.Write("Введите ключ для удаления: ");
+                            string? keyToRemove = Console.ReadLine();
+                            bool removed = collection.Remove(keyToRemove);
+                            Console.WriteLine($"Элемент с ключом '{keyToRemove}' {(removed ? "удалён" : "не найден")}.");
+                            collection.Print();
+                            break;
+                        case "8":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            KeyValuePair<string, MusicInstrument>[] array = new KeyValuePair<string, MusicInstrument>[collection.Count];
+                            collection.CopyTo(array, 0);
+                            Console.WriteLine("Коллекция скопирована в массив:");
+                            for (int i = 0; i < array.Length; i++)
+                            {
+                                Console.WriteLine($"  [{i}]: Key: {array[i].Key}, Value: {array[i].Value}");
+                            }
+                            break;
+                        case "9":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            collection.Clear();
+                            Console.WriteLine("Коллекция очищена.");
+                            collection.Print();
+                            break;
+                        case "10":
+                            if (collection == null)
+                            {
+                                Console.WriteLine("Сначала создайте коллекцию.");
+                                break;
+                            }
+                            collection.Print();
+                            break;
+                        default:
+                            Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка: {ex.Message}");
                 }
             }
         }
